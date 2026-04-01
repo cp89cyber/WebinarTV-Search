@@ -45,6 +45,15 @@ VITE_API_BASE_URL=http://localhost:3000
 
 Point this at the WebiCast API instance you want to query in development, preview, or production.
 
+## Vercel Deployment
+
+This project deploys to Vercel as a static Vite SPA.
+
+- Deep links rely on the committed `vercel.json` rewrite to serve `index.html` for client-side routes.
+- Set `VITE_API_BASE_URL` to the external API origin in both Preview and Production environments.
+- Missing production API config now fails in-app instead of silently targeting `http://localhost:3000`.
+- In Vercel project settings, keep the framework preset as `Vite`, the build command as `npm run build`, and the output directory as `dist`.
+
 ## Verification
 
 The project is currently verified with:
