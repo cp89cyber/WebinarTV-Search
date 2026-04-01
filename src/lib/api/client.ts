@@ -11,10 +11,8 @@ import {
   type WebinarDetail,
   type WebinarSummary
 } from "./schemas";
+import { resolveApiBaseUrl } from "./config";
 import { filtersToApiSearchParams, type CatalogFilters } from "../queryString";
-
-const DEFAULT_API_BASE_URL = "http://localhost:3000";
-const apiBaseUrl = new URL(import.meta.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL);
 
 export class ApiError extends Error {
   constructor(
@@ -36,6 +34,7 @@ async function request<T>(
     signal?: AbortSignal;
   }
 ): Promise<T> {
+  const apiBaseUrl = resolveApiBaseUrl();
   const url = new URL(path, apiBaseUrl);
   if (options?.searchParams) {
     url.search = options.searchParams.toString();
