@@ -2,15 +2,36 @@ import type { ChangeEvent } from "react";
 
 import { Link } from "react-router-dom";
 
+export type SourceCacheStatus = "loading" | "fresh" | "stale" | "unavailable";
+
 interface SearchHeroProps {
   searchValue: string;
   onSearchChange: (value: string) => void;
   totalWebinars?: number;
   totalCategories?: number;
-  cacheState?: "fresh" | "stale";
+  sourceCacheStatus: SourceCacheStatus;
   resultSummary: string;
   isRefreshing: boolean;
 }
+
+const sourceCacheDisplay: Record<SourceCacheStatus, { label: string; description: string }> = {
+  loading: {
+    label: "Loading",
+    description: "Checking the public WebiCast API cache state."
+  },
+  fresh: {
+    label: "Fresh",
+    description: "The API metadata is within the upstream cache window."
+  },
+  stale: {
+    label: "Stale",
+    description: "The API is serving the latest cached snapshot while refresh recovers."
+  },
+  unavailable: {
+    label: "Unavailable",
+    description: "Cache metadata could not be loaded. Search remains available."
+  }
+};
 
 function formatMetric(value: number | undefined): string {
   return typeof value === "number" ? value.toLocaleString() : "—";
@@ -21,10 +42,12 @@ export function SearchHero({
   onSearchChange,
   totalWebinars,
   totalCategories,
-  cacheState,
+  sourceCacheStatus,
   resultSummary,
   isRefreshing
 }: SearchHeroProps) {
+  const sourceCache = sourceCacheDisplay[sourceCacheStatus];
+
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     onSearchChange(event.target.value);
   }
@@ -74,8 +97,8 @@ export function SearchHero({
         </article>
         <article className="hero__metric-card">
           <span>Source cache</span>
-          <strong>{cacheState === "stale" ? "Stale" : cacheState === "fresh" ? "Fresh" : "Unknown"}</strong>
-          <p>Powered by the public WebiCast API and its upstream cache state.</p>
+          <strong>{sourceCache.label}</strong>
+          <p>{sourceCache.description}</p>
         </article>
       </div>
     </section>

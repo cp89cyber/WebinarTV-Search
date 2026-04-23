@@ -54,6 +54,7 @@ test("supports homepage load, search, filters, pagination, detail navigation, 40
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /find the next webinar worth your attention/i })).toBeVisible();
   await expect(page.getByText("AI Operations Briefing")).toBeVisible();
+  await expect(page.getByText("Fresh")).toBeVisible();
 
   await page.getByLabel("Search webinars").fill("revenue");
   await page.waitForTimeout(350);

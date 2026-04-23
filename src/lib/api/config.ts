@@ -21,12 +21,22 @@ function createInvalidBaseUrlError(value?: string): ConfigurationError {
   );
 }
 
+function normalizeApiBaseUrl(url: URL): URL {
+  const normalizedUrl = new URL(url.toString());
+
+  if (!normalizedUrl.pathname.endsWith("/")) {
+    normalizedUrl.pathname = `${normalizedUrl.pathname}/`;
+  }
+
+  return normalizedUrl;
+}
+
 export function resolveApiBaseUrl(env: RuntimeEnv = import.meta.env): URL {
   const rawValue = env.VITE_API_BASE_URL?.trim();
 
   if (!rawValue) {
     if (env.DEV) {
-      return new URL(DEFAULT_DEV_API_BASE_URL);
+      return normalizeApiBaseUrl(new URL(DEFAULT_DEV_API_BASE_URL));
     }
 
     throw new ConfigurationError(
@@ -42,7 +52,7 @@ export function resolveApiBaseUrl(env: RuntimeEnv = import.meta.env): URL {
       throw createInvalidBaseUrlError(rawValue);
     }
 
-    return url;
+    return normalizeApiBaseUrl(url);
   } catch (error) {
     if (error instanceof ConfigurationError) {
       throw error;
@@ -50,4 +60,9 @@ export function resolveApiBaseUrl(env: RuntimeEnv = import.meta.env): URL {
 
     throw createInvalidBaseUrlError(rawValue);
   }
+}
+
+export function resolveApiEndpoint(path: string, env: RuntimeEnv = import.meta.env): URL {
+  const normalizedPath = path.replace(/^\/+/, "");
+  return new URL(normalizedPath, resolveApiBaseUrl(env));
 }
