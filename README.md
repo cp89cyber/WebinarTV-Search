@@ -43,14 +43,20 @@ npm run test:e2e
 VITE_API_BASE_URL=http://localhost:3000
 ```
 
-Point this at the WebiCast API instance you want to query in development, preview, or production.
+Point this at the WebiCast API instance you want to query in development, preview, or production. The canonical production API origin is:
+
+```bash
+VITE_API_BASE_URL=https://webi-cast-api.vercel.app
+```
 
 ## Vercel Deployment
 
 This project deploys to Vercel as a static Vite SPA.
 
 - Deep links rely on the committed `vercel.json` rewrite to serve `index.html` for client-side routes.
-- Set `VITE_API_BASE_URL` to the external API origin in both Preview and Production environments.
+- Set `VITE_API_BASE_URL=https://webi-cast-api.vercel.app` in both Preview and Production environments.
+- Redeploy after changing `VITE_API_BASE_URL` because Vite bakes `VITE_*` values into the static bundle at build time.
+- Do not point the app at same-origin `/v1/*` routes on `webinar-tv-search.vercel.app`; the SPA rewrite catches those paths and serves `index.html`, not the API.
 - Missing production API config now fails in-app instead of silently targeting `http://localhost:3000`.
 - In Vercel project settings, keep the framework preset as `Vite`, the build command as `npm run build`, and the output directory as `dist`.
 

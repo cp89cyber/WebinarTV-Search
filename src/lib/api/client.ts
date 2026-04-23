@@ -11,7 +11,7 @@ import {
   type WebinarDetail,
   type WebinarSummary
 } from "./schemas";
-import { resolveApiBaseUrl } from "./config";
+import { resolveApiEndpoint } from "./config";
 import { filtersToApiSearchParams, type CatalogFilters } from "../queryString";
 
 export class ApiError extends Error {
@@ -34,8 +34,7 @@ async function request<T>(
     signal?: AbortSignal;
   }
 ): Promise<T> {
-  const apiBaseUrl = resolveApiBaseUrl();
-  const url = new URL(path, apiBaseUrl);
+  const url = resolveApiEndpoint(path);
   if (options?.searchParams) {
     url.search = options.searchParams.toString();
   }

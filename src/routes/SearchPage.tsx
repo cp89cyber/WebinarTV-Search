@@ -5,7 +5,7 @@ import { EmptyState } from "../components/EmptyState";
 import { ErrorState } from "../components/ErrorState";
 import { FilterBar } from "../components/FilterBar";
 import { Pagination } from "../components/Pagination";
-import { SearchHero } from "../components/SearchHero";
+import { SearchHero, type SourceCacheStatus } from "../components/SearchHero";
 import { WebinarCard } from "../components/WebinarCard";
 import { useCatalogFilters } from "../hooks/useCatalogFilters";
 import { useMeta } from "../hooks/useMeta";
@@ -26,6 +26,11 @@ export function SearchPage() {
     useCatalogFilters();
   const metaQuery = useMeta();
   const webinarsQuery = useWebinars(filters);
+  const sourceCacheStatus: SourceCacheStatus = metaQuery.isPending
+    ? "loading"
+    : metaQuery.isError
+      ? "unavailable"
+      : metaQuery.data.cache.state;
 
   useEffect(() => {
     document.title = filters.q ? `${filters.q} | WebinarTV Search` : "WebinarTV Search";
@@ -38,7 +43,7 @@ export function SearchPage() {
         onSearchChange={setSearchDraft}
         totalWebinars={metaQuery.data?.data.uniqueWebinarCount}
         totalCategories={metaQuery.data?.data.categories.length}
-        cacheState={metaQuery.data?.cache.state}
+        sourceCacheStatus={sourceCacheStatus}
         resultSummary={getResultSummary(webinarsQuery.data?.totalItems, filters.q)}
         isRefreshing={webinarsQuery.isFetching}
       />
